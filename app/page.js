@@ -16,8 +16,18 @@ function capitalize(str) {
 }
 
 export default function Home() {
-  document.title = "Pantry app";
+  const [items, setItems] = useState([
+    { name: "milk", price: 4.95, quantity: 1 },
+    { name: "Movie", price: 24.95, quantity: 1 },
+    { name: "coffee", price: 4.95, quantity: 1 },
+  ]);
+
+  const [total, setTotal] = useState(34.85);
+  const [newItem, setNewItem] = useState({ name: "", price: "", quantity: "" });
+  const [search, setSearch] = useState("");
+
   useEffect(() => {
+    document.title = "Pantry app";
     const q = query(collection(db, "items"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       let itemsArr = [];
@@ -31,16 +41,6 @@ export default function Home() {
     });
     return () => unsubscribe();
   }, []);
-
-  const [items, setItems] = useState([
-    { name: "milk", price: 4.95, quantity: 1 },
-    { name: "Movie", price: 24.95, quantity: 1 },
-    { name: "coffee", price: 4.95, quantity: 1 },
-  ]);
-
-  const [total, setTotal] = useState(34.85);
-  const [newItem, setNewItem] = useState({ name: "", price: "", quantity: "" });
-  const [search, setSearch] = useState("");
 
   const addItem = async (e) => {
     e.preventDefault();
@@ -98,7 +98,7 @@ export default function Home() {
         </h1>
         <div className="p-4 bg-indigo-800 rounded-lg w-full">
           <form
-            className="p-2 w-full flex flex-col  items-center"
+            className="p-2 w-full flex flex-col items-center"
             onSubmit={addItem}
           >
             <div className="w-full flex flex-row flex-wrap justify-center">
@@ -109,7 +109,7 @@ export default function Home() {
                 }
                 type="text"
                 placeholder="enter item"
-                className="bg-black border text-white m-1 p-2 rounded-lg flex-1 w-2/5 min-w-[120px] xs:full "
+                className="bg-black border text-white m-1 p-2 rounded-lg flex-1 w-2/5 min-w-[120px] xs:w-full"
               />
               <input
                 value={newItem.price}
@@ -118,7 +118,7 @@ export default function Home() {
                 }
                 type="number"
                 placeholder="$"
-                className="bg-black text-white m-1 p-2 rounded-lg xs:w-full w-1/5 min-w-[80px] "
+                className="bg-black text-white m-1 p-2 rounded-lg xs:w-full w-1/5 min-w-[80px]"
               />
               <input
                 value={newItem.quantity}
