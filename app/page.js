@@ -16,6 +16,7 @@ function capitalize(str) {
 }
 
 export default function Home() {
+  document.title = "Pantry app";
   useEffect(() => {
     const q = query(collection(db, "items"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -97,10 +98,10 @@ export default function Home() {
         </h1>
         <div className="p-4 bg-indigo-800 rounded-lg w-full">
           <form
-            className="p-2 w-full flex flex-col sm:flex-row items-center"
+            className="p-2 w-full flex flex-col  items-center"
             onSubmit={addItem}
           >
-            <div className="w-full flex sm:flex-col xs:flex-col flex-row flex-nowrap justify-center">
+            <div className="w-full flex flex-row flex-wrap justify-center">
               <input
                 value={newItem.name}
                 onChange={(e) =>
@@ -108,7 +109,7 @@ export default function Home() {
                 }
                 type="text"
                 placeholder="enter item"
-                className="bg-black border text-white m-1 p-2 rounded-lg flex-1 "
+                className="bg-black border text-white m-1 p-2 rounded-lg flex-1 w-2/5 min-w-[120px] xs:full "
               />
               <input
                 value={newItem.price}
@@ -117,7 +118,7 @@ export default function Home() {
                 }
                 type="number"
                 placeholder="$"
-                className="bg-black text-white m-1 p-2 rounded-lg flex-1 w-2/5 sm:w-full"
+                className="bg-black text-white m-1 p-2 rounded-lg xs:w-full w-1/5 min-w-[80px] "
               />
               <input
                 value={newItem.quantity}
@@ -126,11 +127,11 @@ export default function Home() {
                 }
                 type="number"
                 placeholder="amount"
-                className="bg-black text-white m-1 p-2 rounded-lg flex-1 w-2/5 sm:w-full"
+                className="bg-black text-white m-1 p-2 rounded-lg flex-1 xs:w-full w-2/5 min-w-[100px]"
               />
               <button
                 type="submit"
-                className="bg-black text-white m-1 p-2 rounded-lg flex-1 w-1/5 hover:opacity-80 sm:w-full"
+                className="bg-black text-white m-1 p-2 rounded-lg flex-1 w-1/5 hover:opacity-80 xs:w-full"
               >
                 add
               </button>
@@ -247,4 +248,3 @@ export default function Home() {
     </main>
   );
 }
-
