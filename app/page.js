@@ -9,6 +9,9 @@ import {
   query,
 } from "firebase/firestore";
 import { db } from "./firebase";
+import { ItemsBar } from "./components/itemsBar";
+import { Cart } from "./components/Cart";
+import { Recipie } from "./components/Recipies";
 
 function capitalize(str) {
   if (!str) return str; // Handle empty strings
@@ -25,6 +28,10 @@ export default function Home() {
   const [total, setTotal] = useState(34.85);
   const [newItem, setNewItem] = useState({ name: "", price: "", quantity: "" });
   const [search, setSearch] = useState("");
+
+  const [sortKey, setSortKey] = useState("Alphabetical");
+  const [buttonTracker, setButtonTracker] = useState(1);
+
 
   useEffect(() => {
     document.title = "Pantry app";
@@ -90,160 +97,85 @@ export default function Home() {
     setItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
+
+  const getButtonClass = (id) => {
+    return `rounded border-2 border-black w-32 h-7 ${
+      buttonTracker === id
+        ? "bg-indigo-800 text-white"
+        : "bg-white text-black hover:bg-black hover:text-white"
+    }`;
+  };
+
   return (
     <main className="bg-black-500 flex min-h-screen flex-col items-center justify-between p-4 sm:p-24 w-full">
       <div className="z-10 max-w-3xl w-full items-center justify-between font-mono text-sm">
-        <h1 className="block text-4xl p-4 text-center w-full">
-          Pantry Tracker
-        </h1>
-        <div className="p-4 bg-indigo-800 rounded-lg w-full">
-          <form
-            className="p-2 w-full flex flex-col items-center"
-            onSubmit={addItem}
-          >
-            <div className="w-full flex flex-row flex-wrap justify-center">
-              <input
-                value={newItem.name}
-                onChange={(e) =>
-                  setNewItem({ ...newItem, name: e.target.value })
-                }
-                type="text"
-                placeholder="enter item"
-                className="bg-black border text-white m-1 p-2 rounded-lg flex-1 w-2/5 min-w-[120px] xs:w-full"
-              />
-              <input
-                value={newItem.price}
-                onChange={(e) =>
-                  setNewItem({ ...newItem, price: e.target.value })
-                }
-                type="number"
-                placeholder="$"
-                className="bg-black text-white m-1 p-2 rounded-lg xs:w-full w-1/5 min-w-[80px]"
-              />
-              <input
-                value={newItem.quantity}
-                onChange={(e) =>
-                  setNewItem({ ...newItem, quantity: e.target.value })
-                }
-                type="number"
-                placeholder="amount"
-                className="bg-black text-white m-1 p-2 rounded-lg flex-1 xs:w-full w-2/5 min-w-[100px]"
-              />
-              <button
-                type="submit"
-                className="bg-black text-white m-1 p-2 rounded-lg flex-1 w-1/5 hover:opacity-80 xs:w-full"
-              >
-                add
-              </button>
-            </div>
-            <input
-              onChange={(e) => setSearch(e.target.value)}
-              type="text"
-              placeholder="search"
-              className="m-2 bg-black text-white p-2 rounded-lg w-full sm:w-1/2"
-            />
-          </form>
+        <div className="mt-12 flex justify-between">
+          <span></span>
+          <div>
+            <button
+              id="button1"
+              className={getButtonClass(1)}
+              onClick={() => {
+                setButtonTracker(1);
+              }}
+            >
+              Add items
+            </button>
+            <button
+              id="button2"
+              className={getButtonClass(2)}
+              onClick={() => {
+                setButtonTracker(2);
+              }}
+            >
+              View cart
+            </button>
+            <button
+              id="button2"
+              className={getButtonClass(3)}
+              onClick={() => {
+                setButtonTracker(3);
+              }}
+            >
+              Generate recipie
+            </button>
+          </div>
+          <span></span>
 
-          <ul className="mt-4">
-            <li>
-              <div className="text-white flex justify-between mt-2">
-                <strong className="text-lg flex-1">Name</strong>
-                <strong className="text-lg flex-1 text-center">Quantity</strong>
-                <strong className="text-lg flex-1 text-right">Price</strong>
-              </div>
-            </li>
-            {items
-              .filter((item) => item.name.includes(search))
-              .map((item, index) => (
-                <li key={item.id}>
-                  <div className="flex justify-between mt-2">
-                    <div className="flex items-center flex-1">
-                      <button
-                        className="bg-white text-red-500 p-1 mx-1 hover:opacity-80 rounded-lg"
-                        onClick={() => {
-                          setTotal(
-                            (prevTotal) => prevTotal + Number(item.price)
-                          );
-                          const newItems = items.map((itm, indx) => {
-                            if (indx === index) {
-                              return {
-                                ...itm,
-                                quantity: Number(itm.quantity) + 1,
-                              };
-                            }
-                            return itm;
-                          });
-                          setItems(newItems);
-                        }}
-                      >
-                        +
-                      </button>
-                      <button
-                        className="bg-white text-red-500 p-1 mx-1 hover:opacity-80 rounded-lg"
-                        onClick={() => {
-                          setTotal(
-                            (prevTotal) => prevTotal - Number(item.price)
-                          );
-                          if (item.quantity === 1) {
-                            setItems((prevItems) =>
-                              prevItems.filter(
-                                (entry) => entry.name !== item.name
-                              )
-                            );
-                          } else {
-                            const newItems = items.map((itm, indx) => {
-                              if (indx === index) {
-                                return {
-                                  ...itm,
-                                  quantity: Number(itm.quantity) - 1,
-                                };
-                              }
-                              return itm;
-                            });
-                            setItems(newItems);
-                          }
-                        }}
-                      >
-                        -
-                      </button>
-                      <span className="capitalize text-white text-lg">
-                        {item.name}
-                      </span>
-                    </div>
-
-                    <span className="capitalize text-white text-lg text-center flex-1">
-                      {item.quantity}
-                    </span>
-                    <div className="flex-1 text-right">
-                      <span className="text-white pr-2">
-                        {Number(item.price).toFixed(2)}
-                      </span>
-                      <button
-                        className="bg-white text-red-500 p-1 hover:opacity-80 rounded-lg"
-                        onClick={() => {
-                          setTotal(
-                            (prevTotal) =>
-                              prevTotal -
-                              Number(item.price) * Number(item.quantity)
-                          );
-                          deleteItem(item.id);
-                        }}
-                      >
-                        X
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              ))}
-          </ul>
-
-          {items.length > 0 && (
-            <div className="flex justify-between mt-4">
-              <strong className="text-2xl text-white">Total</strong>
-              <span className="text-lg text-white">${total.toFixed(2)}</span>
-            </div>
-          )}
         </div>
+        {buttonTracker === 1 && (
+          <ItemsBar
+            items={items}
+            setItems={setItems}
+            newItem={newItem}
+            setNewItem={setNewItem}
+            addItem={addItem}
+            search={search}
+            setSearch={setSearch}
+            setTotal={setTotal}
+            deleteItem={deleteItem}
+            total={total}
+          />
+        )}
+        {buttonTracker === 2 && (
+          <Cart
+            items={items}
+            setItems={setItems}
+            newItem={newItem}
+            setNewItem={setNewItem}
+            addItem={addItem}
+            search={search}
+            setSearch={setSearch}
+            setTotal={setTotal}
+            deleteItem={deleteItem}
+            total={total}
+            sortKey={sortKey}
+            setSortKey={setSortKey}
+          />
+        )}
+        {buttonTracker === 3 && (
+          <Recipie items={items} SetItems={setItems}></Recipie>
+        )}
       </div>
     </main>
   );
