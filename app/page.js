@@ -9,6 +9,9 @@ import {
   query,
 } from "firebase/firestore";
 import { db } from "./firebase";
+import { ItemsBar } from "./components/itemsBar";
+import { Cart } from "./components/Cart";
+import { Recipie } from "./components/Recipies";
 
 function capitalize(str) {
   if (!str) return str; // Handle empty strings
@@ -16,7 +19,20 @@ function capitalize(str) {
 }
 
 export default function Home() {
+  const [items, setItems] = useState([
+    { name: "milk", price: 4.95, quantity: 1 },
+    { name: "Movie", price: 24.95, quantity: 1 },
+    { name: "coffee", price: 4.95, quantity: 1 },
+  ]);
+
+  const [total, setTotal] = useState(34.85);
+  const [newItem, setNewItem] = useState({ name: "", price: "", quantity: "" });
+  const [search, setSearch] = useState("");
+  const [sortKey, setSortKey] = useState("Alphabetical");
+  const [buttonTracker, setButtonTracker] = useState(1);
+
   useEffect(() => {
+    document.title = "Pantry app";
     const q = query(collection(db, "items"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       let itemsArr = [];
@@ -30,16 +46,6 @@ export default function Home() {
     });
     return () => unsubscribe();
   }, []);
-
-  const [items, setItems] = useState([
-    { name: "milk", price: 4.95, quantity: 1 },
-    { name: "Movie", price: 24.95, quantity: 1 },
-    { name: "coffee", price: 4.95, quantity: 1 },
-  ]);
-
-  const [total, setTotal] = useState(34.85);
-  const [newItem, setNewItem] = useState({ name: "", price: "", quantity: "" });
-  const [search, setSearch] = useState("");
 
   const addItem = async (e) => {
     e.preventDefault();
@@ -89,158 +95,83 @@ export default function Home() {
     setItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
+  const getButtonClass = (id) => {
+    return `rounded border-2 border-black w-32 h-7 ${
+      buttonTracker === id
+        ? "bg-indigo-800 text-white"
+        : "bg-white text-black hover:bg-black hover:text-white"
+    }`;
+  };
+
   return (
-    <main className="bg-black-500 flex min-h-screen flex-col items-center justify-between sm:p-24 p-4 w-full">
+    <main className="bg-black-500 flex min-h-screen flex-col items-center justify-between p-4 sm:p-24 w-full">
       <div className="z-10 max-w-3xl w-full items-center justify-between font-mono text-sm">
-        <h1 className="block text-4xl p-4 text-center w-100">Pantry Tracker</h1>
-        <div className="p-2 bg-indigo-800 big-slate-800 sm:pl-4 pl-24 sm:pr-4 pr-24 rounded-lg w-full ">
-          <form
-            className="p-2 w-full flex flex-col items-center "
-            onSubmit={addItem}
-          >
-            <div className="w-full flex flex-row justify-center">
-              <input
-                value={newItem.name}
-                onChange={(e) =>
-                  setNewItem({ ...newItem, name: e.target.value })
-                }
-                type="text"
-                placeholder="enter item"
-                className="bg-black borde text-white sm:mr-2 mr-6 p-3 sm:p-1 rounded-lg"
-              />
-              <input
-                value={newItem.price}
-                onChange={(e) =>
-                  setNewItem({ ...newItem, price: e.target.value })
-                }
-                type="number"
-                placeholder="enter $"
-                className="bg-black text-white sm:mr-2 pr-6 sm:ml-2 ml-6 p-3 sm:p-1 sm:w-24 rounded-lg"
-              />
-              <input
-                value={newItem.quantity}
-                onChange={(e) =>
-                  setNewItem({ ...newItem, quantity: e.target.value })
-                }
-                type="number"
-                placeholder="enter amount"
-                className="bg-black text-white sm:mr-2 pr-6 sm:ml-2 ml-6 p-3 sm:p-1 sm:w-32 rounded-lg"
-              />
-              <button
-                type="submit"
-                className="bg-black text-white sm:mr-2 pr-6 sm:ml-2 ml-6 p-3 sm:p-1 rounded-lg sm:pl-2 pl-5 sm:pr-2 pr-5 hover:opacity-80"
-              >
-                add
-              </button>
-            </div>
-            <input
-              onChange={(e) => setSearch(e.target.value)}
-              type="text"
-              placeholder="search"
-              className="m-2 bg-black text-white sm:mr-2 pr-6 sm:ml-2 ml-6 p-3 sm:p-1 sm:w-32 rounded-lg"
-            />
-          </form>
-
-          <ul>
-            <li>
-              <div className="text-black flex justify-between mt-2">
-                <strong className="text-lg w-10">Name</strong>
-                <strong className="text-lg w-10 pl-4">Quantity</strong>
-                <strong className="text-right text-lg pr-5">Price</strong>
-              </div>
-            </li>
-            {items
-              .filter((item) => item.name.includes(search))
-              .map((item, index) => (
-                <li key={item.id}>
-                  <div className="flex justify-between mt-2">
-                    <div className="w-16 lg:w-24 sm:w-28">
-                      <button
-                        className="bg-white text-red-500 pl-1 pr-1 ml-1 mr-1 hover:opacity-80 rounded-lg"
-                        onClick={() => {
-                          setTotal(
-                            (prevTotal) => prevTotal + Number(item.price)
-                          );
-                          const newItems = items.map((itm, indx) => {
-                            if (indx === index) {
-                              return {
-                                ...itm,
-                                quantity: Number(itm.quantity) + 1,
-                              };
-                            }
-                            return itm;
-                          });
-                          setItems(newItems);
-                        }}
-                      >
-                        +
-                      </button>
-                      <button
-                        className="bg-white text-red-500 pl-1 pr-1 mr-1 hover:opacity-80 rounded-lg"
-                        onClick={() => {
-                          setTotal(
-                            (prevTotal) => prevTotal - Number(item.price)
-                          );
-                          if (item.quantity === 1) {
-                            setItems((prevItems) =>
-                              prevItems.filter(
-                                (entry) => entry.name !== item.name
-                              )
-                            );
-                          } else {
-                            const newItems = items.map((itm, indx) => {
-                              if (indx === index) {
-                                return {
-                                  ...itm,
-                                  quantity: Number(itm.quantity) - 1,
-                                };
-                              }
-                              return itm;
-                            });
-                            setItems(newItems);
-                          }
-                        }}
-                      >
-                        -
-                      </button>
-                      <span className="capitalize text-black text-lg ">
-                        {item.name}
-                      </span>
-                    </div>
-
-                    <span className="capitalize text-black text-lg text-center">
-                      {item.quantity}
-                    </span>
-                    <div className="w-16">
-                      <span className="text-right text-black pr-2">
-                        {Number(item.price).toFixed(2)}
-                      </span>
-                      <button
-                        className="bg-white text-red-500 pl-1 pr-1 hover:opacity-80 rounded-lg"
-                        onClick={() => {
-                          setTotal(
-                            (prevTotal) =>
-                              prevTotal -
-                              Number(item.price) * Number(item.quantity)
-                          );
-                          deleteItem(item.id);
-                        }}
-                      >
-                        X
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              ))}
-          </ul>
-
-          {items.length > 0 && (
-            <div className="flex flex-row justify-between">
-              <strong className="pt-2 text-2xl">total</strong>
-              <span className="text-lg pt-2">${total.toFixed(2)}</span>
-            </div>
-          )}
+        <div className="mt-12 flex justify-between">
+          <span></span>
+          <div>
+            <button
+              id="button1"
+              className={getButtonClass(1)}
+              onClick={() => {
+                setButtonTracker(1);
+              }}
+            >
+              Add items
+            </button>
+            <button
+              id="button2"
+              className={getButtonClass(2)}
+              onClick={() => {
+                setButtonTracker(2);
+              }}
+            >
+              View cart
+            </button>
+            <button
+              id="button2"
+              className={getButtonClass(3)}
+              onClick={() => {
+                setButtonTracker(3);
+              }}
+            >
+              Generate recipie
+            </button>
+          </div>
+          <span></span>
         </div>
+        {buttonTracker === 1 && (
+          <ItemsBar
+            items={items}
+            setItems={setItems}
+            newItem={newItem}
+            setNewItem={setNewItem}
+            addItem={addItem}
+            search={search}
+            setSearch={setSearch}
+            setTotal={setTotal}
+            deleteItem={deleteItem}
+            total={total}
+          />
+        )}
+        {buttonTracker === 2 && (
+          <Cart
+            items={items}
+            setItems={setItems}
+            newItem={newItem}
+            setNewItem={setNewItem}
+            addItem={addItem}
+            search={search}
+            setSearch={setSearch}
+            setTotal={setTotal}
+            deleteItem={deleteItem}
+            total={total}
+            sortKey={sortKey}
+            setSortKey={setSortKey}
+          />
+        )}
+        {buttonTracker === 3 && (
+          <Recipie items={items} SetItems={setItems}></Recipie>
+        )}
       </div>
     </main>
   );
