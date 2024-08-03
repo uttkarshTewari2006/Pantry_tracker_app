@@ -28,8 +28,10 @@ export default function Home() {
   const [total, setTotal] = useState(34.85);
   const [newItem, setNewItem] = useState({ name: "", price: "", quantity: "" });
   const [search, setSearch] = useState("");
+
   const [sortKey, setSortKey] = useState("Alphabetical");
   const [buttonTracker, setButtonTracker] = useState(1);
+
 
   useEffect(() => {
     document.title = "Pantry app";
@@ -95,6 +97,7 @@ export default function Home() {
     setItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
+
   const getButtonClass = (id) => {
     return `rounded border-2 border-black w-32 h-7 ${
       buttonTracker === id
@@ -138,6 +141,7 @@ export default function Home() {
             </button>
           </div>
           <span></span>
+
         </div>
         {buttonTracker === 1 && (
           <ItemsBar
