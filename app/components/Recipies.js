@@ -1,14 +1,12 @@
 import { useState } from "react";
 import axios from "axios";
 
-const apiToken = process.env.NEXT_PUBLIC_LLAMA_API_TOKEN;
-
 const Recipie = ({ items }) => {
-  const [recipieList, SetRecipieList] = useState([]);
+  const [recipieList, setRecipieList] = useState([]);
   const [generatedRecipe, setGeneratedRecipe] = useState("");
 
   const handleCheckboxChange = (item) => {
-    SetRecipieList((prevList) => {
+    setRecipieList((prevList) => {
       const newList = [...prevList];
       if (newList.some((existingItem) => existingItem.id === item.id)) {
         return newList.filter((existingItem) => existingItem.id !== item.id);
@@ -32,7 +30,6 @@ const Recipie = ({ items }) => {
         },
         {
           headers: {
-            Authorization: `Bearer ${apiToken}`,
             "Content-Type": "application/json",
           },
         }
