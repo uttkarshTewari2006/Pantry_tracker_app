@@ -26,7 +26,7 @@ const Recipie = ({ items }) => {
 
     try {
       const response = await axios.post(
-        "https://api.llama-api.com/chat/completions",
+        "/api/proxy",
         {
           messages: [{ role: "user", content: generateString }],
         },
@@ -34,7 +34,6 @@ const Recipie = ({ items }) => {
           headers: {
             Authorization: `Bearer ${apiToken}`,
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
           },
         }
       );
