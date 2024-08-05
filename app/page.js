@@ -19,6 +19,7 @@ function capitalize(str) {
 }
 
 export default function Home() {
+  const groqApiKey = process.env.NEXT_PUBLIC_GROQ_API_KEY;
   const [items, setItems] = useState([
     { name: "milk", price: 4.95, quantity: 1 },
     { name: "Movie", price: 24.95, quantity: 1 },
@@ -31,7 +32,6 @@ export default function Home() {
 
   const [sortKey, setSortKey] = useState("Alphabetical");
   const [buttonTracker, setButtonTracker] = useState(1);
-
 
   useEffect(() => {
     document.title = "Pantry app";
@@ -97,7 +97,6 @@ export default function Home() {
     setItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
-
   const getButtonClass = (id) => {
     return `rounded border-2 border-black w-32 h-7 ${
       buttonTracker === id
@@ -141,7 +140,6 @@ export default function Home() {
             </button>
           </div>
           <span></span>
-
         </div>
         {buttonTracker === 1 && (
           <ItemsBar
@@ -174,7 +172,11 @@ export default function Home() {
           />
         )}
         {buttonTracker === 3 && (
-          <Recipie items={items} SetItems={setItems}></Recipie>
+          <Recipie
+            items={items}
+            SetItems={setItems}
+            groqApiKey={groqApiKey}
+          ></Recipie>
         )}
       </div>
     </main>

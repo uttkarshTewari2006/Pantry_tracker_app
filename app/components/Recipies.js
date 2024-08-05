@@ -2,10 +2,9 @@ import { useState } from "react";
 import axios from "axios";
 import Groq from "groq-sdk";
 
-const Recipie = ({ items }) => {
-  const groqApiKey = process.env.GROQ_API_KEY;
+const Recipie = ({ items, groqApiKey }) => {
   const groq = new Groq({
-    apiKey: "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",
+    apiKey: groqApiKey,
     dangerouslyAllowBrowser: true,
   });
   const [recipieList, setRecipieList] = useState([]);
