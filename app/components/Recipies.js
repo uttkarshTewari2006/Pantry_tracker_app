@@ -1,7 +1,13 @@
 import { useState } from "react";
 import axios from "axios";
+import Groq from "groq-sdk";
 
 const Recipie = ({ items }) => {
+  const groqApiKey = process.env.GROQ_API_KEY;
+  const groq = new Groq({
+    apiKey: "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",
+    dangerouslyAllowBrowser: true,
+  });
   const [recipieList, setRecipieList] = useState([]);
   const [generatedRecipe, setGeneratedRecipe] = useState("");
 
@@ -15,28 +21,28 @@ const Recipie = ({ items }) => {
       }
     });
   };
-
+  async function getGroqChatCompletion(Content) {
+    return groq.chat.completions.create({
+      messages: [
+        {
+          role: "user",
+          content: Content,
+        },
+      ],
+      model: "llama3-8b-8192",
+    });
+  }
   const handleGenerate = async () => {
-    let generateString = "Generate a recipe with the following ingredients: ";
+    let generateString =
+      'Generate a recipe with the following ingredients, fromatting it in this syntax - "Dish name: *enter dish name here* \nIngredients: *enter Ingredients here* \nSteps: *enter Steps here". Also make it as concise as possible without compromising the quality of the recipe. Here are the list of the ingredients and their quantities : ';
     recipieList.forEach((item) => {
       generateString += `${item.quantity} ${item.name}, `;
     });
 
     try {
-      const response = await axios.post(
-        "/api/proxy",
-        {
-          messages: [{ role: "user", content: generateString }],
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = response.data;
-      setGeneratedRecipe(data.choices[0].message.content);
-      console.log(data.choices[0].message.content); // Assuming response.data contains the recipe string
+      const chatCompletion = await getGroqChatCompletion(generateString);
+      // Print the completion returned by the LLM.
+      setGeneratedRecipe(chatCompletion.choices[0]?.message?.content || "");
     } catch (error) {
       console.error(
         "Error generating recipe:",

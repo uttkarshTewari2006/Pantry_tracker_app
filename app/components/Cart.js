@@ -1,6 +1,4 @@
-// components/Cart.js
-import React from "react";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 
 const Cart = ({
   items,
@@ -16,49 +14,23 @@ const Cart = ({
   sortKey,
   setSortKey,
 }) => {
-  let itemsCopy;
   useEffect(() => {
-    itemsCopy = items;
-    setItems(
-      itemsCopy.sort((a, b) => {
-        if (sortKey == "Alphabetical") {
-          return b.name.localeCompare(a.name);
-        } else if (sortKey == "PriceCheapest") {
-          if (a.price > b.price) {
-            return -1;
-          } else if (a.price < b.price) {
-            return 1;
-          } else {
-            return 0;
-          }
-        } else if (sortKey == "PriceExpensive") {
-          if (a.price > b.price) {
-            return 1;
-          } else if (a.price < b.price) {
-            return -1;
-          } else {
-            return 0;
-          }
-        } else if (sortKey == "QuantityMost") {
-          if (a.quantity > b.quantity) {
-            return 1;
-          } else if (a.quantity < b.quantity) {
-            return -1;
-          } else {
-            return 0;
-          }
-        } else if (sortKey == "QuantityLeast") {
-          if (a.quantity > b.quantity) {
-            return -1;
-          } else if (a.quantity < b.quantity) {
-            return 1;
-          } else {
-            return 0;
-          }
-        }
-      })
-    );
-  }, [sortKey]);
+    const sortedItems = [...items].sort((a, b) => {
+      if (sortKey === "Alphabetical") {
+        return a.name.localeCompare(b.name); // Corrected to sort in ascending order alphabetically
+      } else if (sortKey === "PriceCheapest") {
+        return a.price - b.price; // Simplified for numerical comparison
+      } else if (sortKey === "PriceExpensive") {
+        return b.price - a.price; // Corrected to sort in descending order by price
+      } else if (sortKey === "QuantityMost") {
+        return b.quantity - a.quantity; // Simplified for numerical comparison
+      } else if (sortKey === "QuantityLeast") {
+        return a.quantity - b.quantity; // Simplified for numerical comparison
+      }
+      return 0;
+    });
+    setItems(sortedItems);
+  }, [sortKey, items, setItems]);
 
   return (
     <div className="p-4 bg-indigo-800 rounded-lg w-full">
