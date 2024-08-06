@@ -20,6 +20,7 @@ function capitalize(str) {
 
 export default function Home() {
   const groqApiKey = process.env.NEXT_PUBLIC_GROQ_API_KEY;
+
   const [items, setItems] = useState([
     { name: "milk", price: 4.95, quantity: 1 },
     { name: "Movie", price: 24.95, quantity: 1 },
