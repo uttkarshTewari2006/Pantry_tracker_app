@@ -16,7 +16,7 @@ Features:
 
 --> Ability to view your items with sort options and a search feature 
 
---> Ability to use Llama API to generate a recipe with selected ingredients
+--> Ability to use Llama API to generate a recipe with selected ingredients (Unfortunately, this feature does not work in the live demo due to Vercel hosting limitations on the free version)
 
 
 This is the URL to access the web app demo: https://pantry-tracker-app-bice.vercel.app/
